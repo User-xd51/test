@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --border: #30363d;
+            --success: #3fb950;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f6f8fa;
+            --bg-tertiary: #ffffff;
+            --text-primary: #24292f;
+            --text-secondary: #57606a;
+            --border: #d0d7de;
+        }
+
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .settings-btn:hover {
+            background: var(--bg-tertiary);
+            transform: rotate(90deg);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            padding: 30px;
+            transition: right 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .settings-header h2 {
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+        }
+
+        .setting-item {
+            margin-bottom: 25px;
+        }
+
+        .setting-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .setting-item input[type="text"],
+        .setting-item input[type="email"],
+        .setting-item textarea,
+        .setting-item select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .setting-item textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .save-btn:hover {
+            opacity: 0.9;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100px); }
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 20px;
+            display: block;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .about-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--accent);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .project-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+            border-color: var(--accent);
+        }
+
+        .project-card h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .project-card p {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: var(--bg-tertiary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .social-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2>Settings</h2>
+            <button class="close-btn" onclick="toggleSettings()">×</button>
+        </div>
+
+        <div class="setting-item">
+            <label>Theme</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                <span class="slider"></span>
+            </label>
+            <span id="themeLabel" style="margin-left: 10px; color: var(--text-secondary);">Dark Mode</span>
+        </div>
+
+        <div class="setting-item">
+            <label for="userName">Your Name</label>
+            <input type="text" id="userName" placeholder="Enter your name">
+        </div>
+
+        <div class="setting-item">
+            <label for="userTitle">Title/Role</label>
+            <input type="text" id="userTitle" placeholder="e.g., Full Stack Developer">
+        </div>
+
+        <div class="setting-item">
+            <label for="userBio">About You</label>
+            <textarea id="userBio" placeholder="Write a brief bio about yourself..."></textarea>
+        </div>
+
+        <div class="setting-item">
+            <label for="githubUsername">GitHub Username</label>
+            <input type="text" id="githubUsername" placeholder="Your GitHub username">
+        </div>
+
+        <div class="setting-item">
+            <label for="userEmail">Email</label>
+            <input type="email" id="userEmail" placeholder="your.email@example.com">
+        </div>
+
+        <div class="setting-item">
+            <label>Show Stats</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="showStats" checked onchange="toggleStats()">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-item">
+            <label>Animation Speed</label>
+            <select id="animationSpeed" onchange="changeAnimationSpeed()">
+                <option value="slow">Slow</option>
+                <option value="normal" selected>Normal</option>
+                <option value="fast">Fast</option>
+            </select>
+        </div>
+
+        <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+    </div>
+
+    <header>
+        <img src="https://github.com/github.png" alt="Profile" class="profile-img" id="profileImg">
+        <h1 id="displayName">Your Name</h1>
+        <p class="subtitle" id="displayTitle">Developer & Creator</p>
+    </header>
+
+    <div class="container">
+        <section class="about-section">
+            <h2>About Me</h2>
+            <p id="displayBio">
+                I'm a passionate developer who loves building amazing things with code. 
+                Check out my work below and feel free to reach out!
+            </p>
+        </section>
+
+        <section id="statsSection">
+            <h2>GitHub Stats</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-number">42</span>
+                    <span class="stat-label">Repositories</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1.2K</span>
+                    <span class="stat-label">Contributions</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">156</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">89</span>
+                    <span class="stat-label">Stars Earned</span>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-top: 50px;">
+            <h2>Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Awesome Project</h3>
+                    <p>A cool project that does amazing things. Built with modern technologies.</p>
+                    <div class="tech-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">React</span>
+                        <span class="tag">Node.js</span>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>Another Project</h3>
+                    <p>An innovative solution to a common problem. Open source and well documented.</p>
+                    <div class="tech-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Django</span>
+                        <span class="tag">PostgreSQL</span>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>Cool Tool</h3>
+                    <p>A utility that makes developers' lives easier. Simple yet powerful.</p>
+                    <div class="tech-tags">
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">Vue.js</span>
+                        <span class="tag">Tailwind</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="social-links">
+            <a href="#" id="githubLink">GitHub</a>
+            <a href="#" id="emailLink">Email</a>
+            <a href="#">Twitter</a>
+            <a href="#">LinkedIn</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 <span id="footerName">Your Name</span>. Built with ❤️ and code.</p>
+    </footer>
+
+    <script src="settings.js"></script>
+</body>
+</html>
